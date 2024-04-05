@@ -1,0 +1,60 @@
+#importing the dataset
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+#loading the datset from the sklearn preadded dataset
+from sklearn.datasets import load_breast_cancer
+#Creating the instance of the data
+dataset=load_breast_cancer()
+#checking the different keys of our datset
+dataset.keys()
+#converting the dataset into the dataframe
+data=pd.DataFrame(dataset['data'],columns=dataset['feature_names'])
+data.head(5)
+sns.countplot('data')
+sns.kdeplot(data['worst symmetry'])
+sns.distplot(data['mean radius'],kde=False,bins=30)
+sns.distplot(data['mean texture'],kde=True,bins=45,color='green')
+#Checking for any missing value or null value
+fig=plt.subplots(figsize=(16,10))
+sns.heatmap(data.isnull(),cbar=False,yticklabels=False,cmap='viridis')
+#Diving the data into x and y for training the model
+#X-Contains the features on which the model will classify the type of breast cancer
+#y-contains the original classifications
+X=data
+y=dataset['target']
+from sklearn.model_selection import train_test_split
+#Spliting the data into train and test
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
+#feature Scaling
+from sklearn.preprocessing import StandardScaler
+scaler=StandardScaler()
+X_train=scaler.fit_transform(X_train)
+X_test=scaler.transform(X_test)
+#Adding the first hidden layer of our ANN Model
+#units-Number of nodes we want to add in our hidden layer.
+#kernel_intializer-The function is used to intialise the weights.
+#input_dim=Number of nodes in the input layer
+#activation=The Activation Function
+#Dropout function is used to avoid overfitting
+model.add(Dense(units=15,kernel_initializer='uniform',activation='relu',input_dim=30))
+model.add(Dropout(0.2))
+#Adding the Second hidden layer of our ANN Model
+model.add(Dense(units=15,kernel_initializer='uniform',activation='relu'))
+model.add(Dropout(0.2))
+#Compiling the model
+model.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
+#fitting the model to our dataset and specifying the number of batch_size and epochs
+model.fit(X_train,y_train,epochs=100,batch_size=10)
+#making prediction of our model
+prediction=model.predict(X_test)
+#Evaluating the performance of our model
+from sklearn.metrics import classification_report,confusion_matrix,accuracy_score
+prediction=(prediction>0.5)
+#Confusion Matrix
+confusion_matrix(y_test,prediction)
+#Classifiaction Report
+print(classification_report(y_test,prediction))
+#Accuracy of our Model
+accuracy_score(y_test,prediction)
